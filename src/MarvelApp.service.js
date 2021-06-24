@@ -6,7 +6,6 @@ export const fetchCharacters = async () => {
             `http://gateway.marvel.com/v1/public/characters?ts=1&limit=50&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_MD5_HASH}`
         )
 
-        // console.log('Fetched Marvel Characters: ', response.data.data.results)
         const characters = response?.data?.data?.results.map(character => ({
             id: character.id,
             name: character.name,
@@ -18,6 +17,29 @@ export const fetchCharacters = async () => {
         return characters
     } catch (err) {
         console.error('Error fetching Marvel Characters: ', err)
+        return null
+    }
+}
+
+export const fetchCharacterDetails = async (characterId) => {
+    try {
+        const response = await axios.get(
+            `http://gateway.marvel.com/v1/public/characters/${characterId}?ts=1&limit=50&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_MD5_HASH}`
+        )
+
+        const details = response?.data?.data?.results[0]
+        const characterDetails = {
+            id: details.id,
+            name: details.name,
+            description: details.description,
+            imageURL: `${details.thumbnail.path}.jpg`,
+            comics: details.comics.items
+        }
+
+        console.log(characterDetails)
+        return characterDetails
+    } catch (err) {
+        console.error('Error fetching Marvel Character Details: ', err)
         return null
     }
 }
