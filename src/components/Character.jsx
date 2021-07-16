@@ -4,32 +4,37 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
-// import CardActions from '@material-ui/core/CardActions';
-// import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import { red } from '@material-ui/core/colors';
+import { useHistory } from 'react-router';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
-    maxWidth: 345,
+    maxWidth: 300,
+    transition: 'all .2s ease-in-out',
+    cursor: 'pointer',
+
+    '&:hover': {
+      transform: 'scale(1.07)',
+    }
   },
   media: {
     height: 0,
     paddingTop: '56.25%', // 16:9
   },
-  avatar: {
-    backgroundColor: red[500],
-  },
 }));
 
-export default function Character({name, description, imageURL}) {
+export default function Character({name, description, imageURL, characterId}) {
   const classes = useStyles();
 
+  const history = useHistory();
+
+  const handleClickCharacterCard = () => history.push(`/character/${characterId}`)
+
   return (
-    <Card className={classes.root}>
+    <Card className={classes.root} onClick={handleClickCharacterCard}>
       <CardHeader
         title={name}
-        subheader="Tony Stark"
+        style={{textAlign: 'center'}}
       />
       <CardMedia
         className={classes.media}
@@ -41,14 +46,6 @@ export default function Character({name, description, imageURL}) {
           {description || "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente aliquid obcaecati, autem necessitatibus modi quasi quo mollitia quas suscipit labore possimus neque nesciunt omnis voluptatem nisi dignissimos, libero fuga odio."}
         </Typography>
       </CardContent>
-      {/* <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
-      </CardActions> */}
     </Card>
   );
 }

@@ -5,15 +5,12 @@ import CharacterList from './CharacterList'
 import './Home.css'
 
 const Home = () => {
+    const [searchInput, setSearchInput] = React.useState('')
     return (
-        <div className="container">
-         
-                <Header />
-                <CharacterList />
-                <Footer />
-             {/*  <CharacterList />
-                <Footer /> 
-             */}
+        <div className='container'>
+            <Header searchInput={searchInput} setSearchInput={setSearchInput} />
+            <CharacterList searchInput={searchInput}/>
+            <Footer />
         </div>
     )
 }

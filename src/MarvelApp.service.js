@@ -1,19 +1,23 @@
 import axios from 'axios'
 
-export const fetchCharacters = async () => {
+export const fetchCharacters = async (characterName = '') => {
     try {
-        const response = await axios.get(
-            `http://gateway.marvel.com/v1/public/characters?ts=1&limit=50&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_MD5_HASH}`
-        )
-
+        let response
+        if (characterName === '') {
+            response = await axios.get(
+                `http://gateway.marvel.com/v1/public/characters?ts=1&limit=50&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_MD5_HASH}`
+            )
+        } else {
+            response = await axios.get(
+                `http://gateway.marvel.com/v1/public/characters?ts=1&limit=50&nameStartsWith=${characterName}&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_MD5_HASH}`
+            )
+        }
         const characters = response?.data?.data?.results.map(character => ({
             id: character.id,
             name: character.name,
             description: character.description,
             imageURL: `${character.thumbnail.path}.jpg`,
         }))
-
-        console.log(characters)
         return characters
     } catch (err) {
         console.error('Error fetching Marvel Characters: ', err)
@@ -21,10 +25,10 @@ export const fetchCharacters = async () => {
     }
 }
 
-export const fetchCharacterDetails = async (characterId) => {
+export const fetchCharacterDetails = async characterId => {
     try {
         const response = await axios.get(
-            `http://gateway.marvel.com/v1/public/characters/${characterId}?ts=1&limit=50&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_MD5_HASH}`
+            `http://gateway.marvel.com/v1/public/characters/${characterId}?ts=1&apikey=${process.env.REACT_APP_MARVEL_API_KEY}&hash=${process.env.REACT_APP_MARVEL_API_MD5_HASH}`
         )
 
         const details = response?.data?.data?.results[0]
@@ -33,10 +37,10 @@ export const fetchCharacterDetails = async (characterId) => {
             name: details.name,
             description: details.description,
             imageURL: `${details.thumbnail.path}.jpg`,
-            comics: details.comics.items
+            comics: details.comics.items,
         }
 
-        console.log(characterDetails)
+        console.log('Character details from API: ', details)
         return characterDetails
     } catch (err) {
         console.error('Error fetching Marvel Character Details: ', err)

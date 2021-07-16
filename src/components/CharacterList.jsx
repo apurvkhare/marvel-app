@@ -1,83 +1,105 @@
 import React from 'react'
 import Character from './Character'
 import styled from 'styled-components'
-import {useHistory} from 'react-router-dom'
+import Skeleton from '@material-ui/lab/Skeleton'
 import { fetchCharacters } from '../MarvelApp.service'
-import { ACTION_TYPES, dataReducer, FETCH_STATE, initialState } from '../reducer/CharacterReducer'
+import {
+    ACTION_TYPES,
+    dataReducer,
+    FETCH_STATE,
+    initialState,
+} from '../reducer/CharacterReducer'
 
 const StyledCharacterList = styled.div`
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 50px;
     justify-content: center;
 `
 
-const CharacterList = () => {
+const CharacterList = ({ searchInput }) => {
     const [state, dispatch] = React.useReducer(dataReducer, initialState)
 
-    const history = useHistory()
-
-    const { data: characters, fetching, error } = state;
+    const { data: characters, fetching, error } = state
 
     console.log(characters)
     const fetchData = async () => {
         dispatch({
-            type: ACTION_TYPES.FETCH_DATA_INTITATE
+            type: ACTION_TYPES.FETCH_DATA_INTITATE,
         })
-        const data = await fetchCharacters()
-        console.log("inside fetchData: ", data)
-        if(data === null)
+        const data = await fetchCharacters(searchInput)
+        if (data === null)
             dispatch({
-                type: ACTION_TYPES.FETCH_DATA_FAILURE
+                type: ACTION_TYPES.FETCH_DATA_FAILURE,
             })
-        else{
+        else {
             dispatch({
                 type: ACTION_TYPES.FETCH_DATA_SUCCESS,
                 payload: {
-                    data
-                }
+                    data,
+                },
             })
         }
-    } 
+    }
 
     React.useEffect(() => {
         fetchData()
-    }, [])
+    }, [searchInput])
 
-    if(fetching === FETCH_STATE.PENDING)
+
+    if (state.fetching === FETCH_STATE.PENDING) {
         return (
-            <div>
-                <h1 style={{ textAlign: "center" }}>Loading....</h1>
-            </div>
+            <StyledCharacterList>
+                <Skeleton
+                    animation='wave'
+                    variant='rect'
+                    width={300}
+                    height={450}
+                />
+                <Skeleton
+                    animation='wave'
+                    variant='rect'
+                    width={300}
+                    height={450}
+                />
+                <Skeleton
+                    animation='wave'
+                    variant='rect'
+                    width={300}
+                    height={450}
+                />
+                <Skeleton
+                    animation='wave'
+                    variant='rect'
+                    width={300}
+                    height={450}
+                />
+            </StyledCharacterList>
         )
-
-    if(fetching === FETCH_STATE.REJECTED)
-        return (
-            <div>
-                <h2 style={{ textAlign: "center" }}>{error}</h2>
-            </div>
-        )
-
-    const handleClick = (e) => {
-        console.log(e.target)
-        if(Array.from(e.target.classList).includes("MuiCardMedia-root"))
-            history.push(`/character/${e.target.dataset.id}`)
     }
 
+    if (fetching === FETCH_STATE.REJECTED)
+        return (
+            <div>
+                <h2 style={{ textAlign: 'center' }}>{error}</h2>
+            </div>
+        )
+
     return (
-        <StyledCharacterList onClick={handleClick}>
-            <h1>Marvel Character List</h1>
-            {characters &&
-                characters.length !== 0 &&
+        <StyledCharacterList>
+            {characters && characters.length !== 0 ? (
                 characters.map(character => (
                     <Character
                         key={character.id}
                         name={character.name}
                         description={character.description}
                         imageURL={character.imageURL}
-                        data-id={character.id}
+                        characterId={character.id}
                     />
-                ))}
+                ))
+            ) : (
+                <h1>No character found</h1>
+            )}
         </StyledCharacterList>
     )
 }

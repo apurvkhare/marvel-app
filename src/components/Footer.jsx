@@ -6,6 +6,9 @@ const StyledFooter = styled.h4`
     color: white;
     font-style: bold;
     text-align: center;
+    margin: 0;
+    margin-top: 30px;
+    height: 50px;
 `
 
 const Footer = () => {
